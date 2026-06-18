@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 interface Student {
   id: string
   name: string
+  topic: string
   joinedAt: number
 }
 
@@ -40,6 +41,9 @@ export default function TeacherView() {
           <>
             <p className="text-indigo-300 text-xl uppercase tracking-widest mb-2">Now Helping</p>
             <p className="text-6xl font-black text-white">{current.name}</p>
+            {current.topic && (
+              <p className="text-indigo-300 text-xl mt-3">Struggling with: <span className="text-white font-semibold">{current.topic}</span></p>
+            )}
           </>
         ) : (
           <p className="text-4xl font-bold text-indigo-400">Queue is empty</p>
@@ -69,8 +73,11 @@ export default function TeacherView() {
           <ol className="space-y-3">
             {waiting.map((s, i) => (
               <li key={s.id} className="flex items-center gap-4">
-                <span className="w-8 h-8 rounded-full bg-indigo-700 flex items-center justify-center font-bold text-sm">{i + 2}</span>
-                <span className="text-white text-lg">{s.name}</span>
+                <span className="w-8 h-8 rounded-full bg-indigo-700 flex items-center justify-center font-bold text-sm flex-shrink-0">{i + 2}</span>
+                <div>
+                  <p className="text-white text-lg">{s.name}</p>
+                  {s.topic && <p className="text-indigo-400 text-sm">{s.topic}</p>}
+                </div>
               </li>
             ))}
           </ol>
