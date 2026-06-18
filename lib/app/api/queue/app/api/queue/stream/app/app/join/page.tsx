@@ -66,7 +66,7 @@ export default function JoinPage() {
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-teal-900 to-emerald-800 text-white flex flex-col items-center justify-start p-6">
-      <h1 className="text-4xl font-extrabold text-teal-200 mt-8 mb-2">NextInLine</h1>
+      <h1 className="text-4xl font-extrabold teal-200 mt-8 mb-2">NextInLine</h1>
       <p className="text-teal-400 mb-8">Join the classroom queue</p>
 
       {!inQueue ? (
