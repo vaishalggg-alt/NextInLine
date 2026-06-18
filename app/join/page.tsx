@@ -4,12 +4,14 @@ import { useEffect, useState } from 'react'
 interface Student {
   id: string
   name: string
+  topic: string
   joinedAt: number
 }
 
 export default function JoinPage() {
   const [queue, setQueue] = useState<Student[]>([])
   const [name, setName] = useState('')
+  const [topic, setTopic] = useState('')
   const [myId, setMyId] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -40,7 +42,7 @@ export default function JoinPage() {
       const res = await fetch('/api/queue', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: name.trim() }),
+        body: JSON.stringify({ name: name.trim(), topic: topic.trim() }),
       })
       if (!res.ok) throw new Error('Failed to join')
       const student: Student = await res.json()
@@ -81,6 +83,15 @@ export default function JoinPage() {
             maxLength={50}
             required
           />
+          <label className="block text-teal-200 font-semibold mb-2">What are you struggling with? <span className="text-teal-400 font-normal">(optional)</span></label>
+          <input
+            type="text"
+            value={topic}
+            onChange={e => setTopic(e.target.value)}
+            placeholder="e.g. Question 3, fractions..."
+            className="w-full rounded-xl px-4 py-3 text-gray-900 text-lg mb-6 outline-none focus:ring-2 focus:ring-teal-400"
+            maxLength={100}
+          />
           {error && <p className="text-red-400 mb-3 text-sm">{error}</p>}
           <button
             type="submit"
@@ -96,6 +107,7 @@ export default function JoinPage() {
             <p className="text-teal-300 text-sm uppercase tracking-widest mb-1">Your Position</p>
             <p className="text-8xl font-black text-white mb-2">#{myPosition}</p>
             <p className="text-teal-200 text-lg font-semibold">{name}</p>
+            {topic && <p className="text-teal-400 text-sm mt-1">{topic}</p>}
             {myPosition === 1 && (
               <p className="mt-3 text-yellow-300 font-bold animate-pulse">You're next!</p>
             )}
@@ -118,8 +130,11 @@ export default function JoinPage() {
                 key={s.id}
                 className={`flex items-center gap-3 p-2 rounded-lg ${s.id === myId ? 'bg-teal-700/50 font-bold' : ''}`}
               >
-                <span className="w-7 h-7 rounded-full bg-teal-800 flex items-center justify-center text-xs font-bold">{i + 1}</span>
-                <span className="text-white">{s.name}{s.id === myId ? ' (you)' : ''}</span>
+                <span className="w-7 h-7 rounded-full bg-teal-800 flex items-center justify-center text-xs font-bold flex-shrink-0">{i + 1}</span>
+                <div>
+                  <span className="text-white">{s.name}{s.id === myId ? ' (you)' : ''}</span>
+                  {s.topic && <p className="text-teal-400 text-xs">{s.topic}</p>}
+                </div>
               </li>
             ))}
           </ol>
