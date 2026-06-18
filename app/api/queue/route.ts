@@ -7,11 +7,11 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
-  const { name } = await req.json()
+  const { name, topic } = await req.json()
   if (!name || typeof name !== 'string') {
     return NextResponse.json({ error: 'Name required' }, { status: 400 })
   }
-  const student = { id: randomUUID(), name: name.trim(), joinedAt: Date.now() }
+  const student = { id: randomUUID(), name: name.trim(), topic: (topic || '').trim(), joinedAt: Date.now() }
   queue.push(student)
   broadcast()
   return NextResponse.json(student, { status: 201 })
