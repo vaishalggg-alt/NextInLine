@@ -58,64 +58,74 @@ export default function TeacherView() {
   const waiting = queue.slice(1)
 
   if (loading) return (
-    <main className="min-h-screen bg-gradient-to-br from-indigo-950 to-purple-900 flex items-center justify-center">
-      <p className="text-indigo-300 text-2xl">Loading...</p>
+    <main className="min-h-screen bg-black flex items-center justify-center">
+      <p className="text-zinc-500 text-lg tracking-widest uppercase text-sm">Loading...</p>
     </main>
   )
 
   if (!code) return (
-    <main className="min-h-screen bg-gradient-to-br from-indigo-950 to-purple-900 text-white flex flex-col items-center justify-center p-8">
-      <h1 className="text-5xl font-extrabold tracking-tight text-indigo-200 mb-4">NextInLine</h1>
-      <p className="text-indigo-400 mb-10 text-lg">No active class session</p>
-      <button onClick={startClass} className="bg-green-500 hover:bg-green-400 text-white text-2xl font-bold px-12 py-5 rounded-2xl shadow-lg transition">
+    <main className="min-h-screen bg-black text-white flex flex-col items-center justify-center p-8">
+      <h1 style={{ fontFamily: "'Cormorant Garamond', serif" }} className="text-6xl font-light tracking-widest text-white mb-2">NextInLine</h1>
+      <p className="text-zinc-500 text-sm tracking-widest uppercase mb-16">Classroom Queue</p>
+      <button onClick={startClass} className="border border-white/20 hover:border-white text-white text-sm tracking-widest uppercase px-12 py-4 transition-all duration-300 hover:bg-white hover:text-black">
         Start Class
       </button>
     </main>
   )
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-indigo-950 to-purple-900 text-white p-8 flex flex-col">
-      <header className="text-center mb-10">
-        <h1 className="text-5xl font-extrabold tracking-tight text-indigo-200">NextInLine</h1>
-        <div className="mt-3 inline-block bg-white/10 rounded-2xl px-6 py-2">
-          <span className="text-indigo-300 text-sm uppercase tracking-widest">Class Code: </span>
-          <span className="text-white text-3xl font-black tracking-widest">{code}</span>
+    <main className="min-h-screen bg-black text-white p-10 flex flex-col">
+      <header className="text-center mb-14">
+        <h1 style={{ fontFamily: "'Cormorant Garamond', serif" }} className="text-5xl font-light tracking-widest text-white">NextInLine</h1>
+        <div className="mt-4">
+          <span className="text-zinc-500 text-xs tracking-widest uppercase">Class Code </span>
+          <span className="text-white text-2xl font-light tracking-[0.3em] ml-2">{code}</span>
         </div>
       </header>
-      <section className="bg-white/10 rounded-3xl p-8 mb-8 text-center shadow-xl backdrop-blur">
+
+      <section className="border border-white/10 p-10 mb-8 text-center max-w-2xl mx-auto w-full">
         {current ? (
           <>
-            <p className="text-indigo-300 text-xl uppercase tracking-widest mb-2">Now Helping</p>
-            <p className="text-6xl font-black text-white">{current.name}</p>
-            {current.topic && <p className="text-indigo-300 text-xl mt-3">Struggling with: <span className="text-white font-semibold">{current.topic}</span></p>}
+            <p className="text-zinc-500 text-xs uppercase tracking-widest mb-4">Now Helping</p>
+            <p style={{ fontFamily: "'Cormorant Garamond', serif" }} className="text-7xl font-light text-white">{current.name}</p>
+            {current.topic && <p className="text-zinc-400 text-sm mt-4 tracking-wide">Struggling with: <span className="text-white">{current.topic}</span></p>}
           </>
         ) : (
-          <p className="text-4xl font-bold text-indigo-400">Queue is empty</p>
+          <p style={{ fontFamily: "'Cormorant Garamond', serif" }} className="text-3xl font-light text-zinc-600">Queue is empty</p>
         )}
       </section>
-      <div className="flex gap-4 justify-center mb-10 flex-wrap">
-        <button onClick={handleNext} disabled={queue.length === 0} className="bg-green-500 hover:bg-green-400 disabled:opacity-40 disabled:cursor-not-allowed text-white text-2xl font-bold px-10 py-4 rounded-2xl shadow-lg transition">Done — Next Student</button>
-        <button onClick={handleClear} disabled={queue.length === 0} className="bg-red-600 hover:bg-red-500 disabled:opacity-40 disabled:cursor-not-allowed text-white text-sm font-semibold px-5 py-4 rounded-2xl shadow transition">Clear Queue</button>
-        <button onClick={endClass} className="bg-gray-700 hover:bg-gray-600 text-white text-sm font-semibold px-5 py-4 rounded-2xl shadow transition">End Class</button>
+
+      <div className="flex gap-4 justify-center mb-12 flex-wrap">
+        <button onClick={handleNext} disabled={queue.length === 0} className="border border-white/20 hover:border-white disabled:opacity-20 disabled:cursor-not-allowed text-white text-xs tracking-widest uppercase px-8 py-3 transition-all duration-300 hover:bg-white hover:text-black">
+          Done — Next Student
+        </button>
+        <button onClick={handleClear} disabled={queue.length === 0} className="border border-white/10 hover:border-red-500 disabled:opacity-20 disabled:cursor-not-allowed text-zinc-500 hover:text-red-500 text-xs tracking-widest uppercase px-6 py-3 transition-all duration-300">
+          Clear Queue
+        </button>
+        <button onClick={endClass} className="border border-white/10 hover:border-white/30 text-zinc-600 hover:text-zinc-400 text-xs tracking-widest uppercase px-6 py-3 transition-all duration-300">
+          End Class
+        </button>
       </div>
+
       {waiting.length > 0 && (
-        <section className="bg-white/5 rounded-2xl p-6 max-w-lg mx-auto w-full">
-          <h2 className="text-indigo-300 text-lg font-semibold mb-4 uppercase tracking-wide">Waiting ({waiting.length})</h2>
-          <ol className="space-y-3">
+        <section className="max-w-md mx-auto w-full">
+          <h2 className="text-zinc-600 text-xs uppercase tracking-widest mb-6">Waiting — {waiting.length}</h2>
+          <ol className="space-y-4">
             {waiting.map((s, i) => (
-              <li key={s.studentId} className="flex items-center gap-4">
-                <span className="w-8 h-8 rounded-full bg-indigo-700 flex items-center justify-center font-bold text-sm flex-shrink-0">{i + 2}</span>
+              <li key={s.studentId} className="flex items-center gap-5 border-b border-white/5 pb-4">
+                <span className="text-zinc-700 text-sm w-5">{i + 2}</span>
                 <div>
-                  <p className="text-white text-lg">{s.name}</p>
-                  {s.topic && <p className="text-indigo-400 text-sm">{s.topic}</p>}
+                  <p style={{ fontFamily: "'Cormorant Garamond', serif" }} className="text-white text-xl font-light">{s.name}</p>
+                  {s.topic && <p className="text-zinc-600 text-xs mt-1">{s.topic}</p>}
                 </div>
               </li>
             ))}
           </ol>
         </section>
       )}
-      <div className="mt-auto pt-10 text-center text-indigo-500 text-sm">
-        Students join at: <span className="font-mono text-indigo-300">/join</span> with code <span className="font-mono text-indigo-300">{code}</span>
+
+      <div className="mt-auto pt-12 text-center text-zinc-700 text-xs tracking-widest uppercase">
+        Students join at /join · Code {code}
       </div>
     </main>
   )
