@@ -25,6 +25,7 @@ export default function TeacherView() {
   const [leaderboard, setLeaderboard] = useState<{ student_name: string; count: number; avg_seconds: number }[]>([])
   const [timerSeconds, setTimerSeconds] = useState(0)
   const [timerRunning, setTimerRunning] = useState(false)
+  const [copied, setCopied] = useState<string | null>(null)
   const timerRef = useRef<NodeJS.Timeout | null>(null)
   const helpStartRef = useRef<number | null>(null)
 
@@ -153,6 +154,13 @@ export default function TeacherView() {
     setView('leaderboard')
   }
 
+  function copyLink(code: string, id: string) {
+    const url = `${window.location.origin}/join?code=${code}`
+    navigator.clipboard.writeText(url)
+    setCopied(id)
+    setTimeout(() => setCopied(null), 2000)
+  }
+
   function formatTime(s: number) {
     const m = Math.floor(s / 60)
     const sec = s % 60
@@ -181,14 +189,19 @@ export default function TeacherView() {
       <div className="w-full max-w-md space-y-3">
         {classes.length === 0 && <p className="text-zinc-600 text-sm text-center">No classes yet. Create one above.</p>}
         {classes.map(cls => (
-          <div key={cls.id} className="border border-white/10 p-5 flex items-center justify-between">
-            <div>
-              <p style={{ fontFamily: "'Cormorant Garamond', serif" }} className="text-white text-2xl font-light">{cls.name}</p>
-              <p className="text-zinc-600 text-xs tracking-widest mt-1">Code: {cls.code}</p>
+          <div key={cls.id} className="border border-white/10 p-5">
+            <div className="flex items-center justify-between mb-3">
+              <div>
+                <p style={{ fontFamily: "'Cormorant Garamond', serif" }} className="text-white text-2xl font-light">{cls.name}</p>
+                <p className="text-zinc-600 text-xs tracking-widest mt-1">Code: {cls.code}</p>
+              </div>
+              <button onClick={() => deleteClass(cls.id)} className="border border-white/10 hover:border-red-500 text-zinc-600 hover:text-red-500 text-xs tracking-widest uppercase px-4 py-2 transition-all">Delete</button>
             </div>
             <div className="flex gap-3">
-              <button onClick={() => startClass(cls)} className="border border-white/20 hover:border-white text-white text-xs tracking-widest uppercase px-4 py-2 transition-all hover:bg-white hover:text-black">Start</button>
-              <button onClick={() => deleteClass(cls.id)} className="border border-white/10 hover:border-red-500 text-zinc-600 hover:text-red-500 text-xs tracking-widest uppercase px-4 py-2 transition-all">Delete</button>
+              <button onClick={() => startClass(cls)} className="flex-1 border border-white/20 hover:border-white text-white text-xs tracking-widest uppercase px-4 py-2 transition-all hover:bg-white hover:text-black">Start Class</button>
+              <button onClick={() => copyLink(cls.code, cls.id)} className="flex-1 border border-white/10 hover:border-white text-zinc-500 hover:text-white text-xs tracking-widest uppercase px-4 py-2 transition-all">
+                {copied === cls.id ? 'Copied!' : 'Copy Student Link'}
+              </button>
             </div>
           </div>
         ))}
