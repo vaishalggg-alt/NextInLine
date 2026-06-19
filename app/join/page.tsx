@@ -1,5 +1,6 @@
 'use client'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Suspense } from 'react'
+import { useSearchParams } from 'next/navigation'
 
 interface QueueEntry {
   studentId: string
@@ -14,11 +15,12 @@ interface StudentInfo {
   sessionCode: string
 }
 
-export default function JoinPage() {
+function JoinPageInner() {
+  const searchParams = useSearchParams()
   const [queue, setQueue] = useState<QueueEntry[]>([])
   const [sessionCode, setSessionCode] = useState<string | null>(null)
   const [studentInfo, setStudentInfo] = useState<StudentInfo | null>(null)
-  const [codeInput, setCodeInput] = useState('')
+  const [codeInput, setCodeInput] = useState(searchParams.get('code') || '')
   const [nameInput, setNameInput] = useState('')
   const [topic, setTopic] = useState('')
   const [inQueue, setInQueue] = useState(false)
@@ -66,7 +68,7 @@ export default function JoinPage() {
     const res = await fetch('/api/session')
     const { code } = await res.json()
     if (!code || code !== codeInput.trim()) {
-      setError('Invalid class code.')
+      setError('Invalid class code. Ask your teacher for the correct code.')
       setLoading(false)
       return
     }
@@ -108,7 +110,7 @@ export default function JoinPage() {
     <main className="min-h-screen bg-black text-white flex flex-col items-center justify-center p-6">
       <h1 style={{ fontFamily: "'Cormorant Garamond', serif" }} className="text-5xl font-light tracking-widest mb-4">NextInLine</h1>
       <p className="text-zinc-500 text-sm tracking-wide mb-10">The class session has ended.</p>
-      <button onClick={() => { setSessionEnded(false); setStudentInfo(null); setCodeInput(''); setNameInput('') }} className="border border-white/20 hover:border-white text-white text-xs tracking-widest uppercase px-10 py-3 transition-all duration-300 hover:bg-white hover:text-black">
+      <button onClick={() => { setSessionEnded(false); setStudentInfo(null); setCodeInput(searchParams.get('code') || ''); setNameInput('') }} className="border border-white/20 hover:border-white text-white text-xs tracking-widest uppercase px-10 py-3 transition-all duration-300 hover:bg-white hover:text-black">
         Join a New Session
       </button>
     </main>
@@ -183,5 +185,13 @@ export default function JoinPage() {
         </div>
       )}
     </main>
+  )
+}
+
+export default function JoinPage() {
+  return (
+    <Suspense>
+      <JoinPageInner />
+    </Suspense>
   )
 }
