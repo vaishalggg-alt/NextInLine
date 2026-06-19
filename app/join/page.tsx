@@ -66,7 +66,7 @@ export default function JoinPage() {
     const res = await fetch('/api/session')
     const { code } = await res.json()
     if (!code || code !== codeInput.trim()) {
-      setError('Invalid class code. Ask your teacher for the correct code.')
+      setError('Invalid class code.')
       setLoading(false)
       return
     }
@@ -105,61 +105,77 @@ export default function JoinPage() {
   const myPosition = studentInfo ? queue.findIndex(s => s.studentId === studentInfo.studentId) + 1 : 0
 
   if (sessionEnded) return (
-    <main className="min-h-screen bg-gradient-to-br from-teal-900 to-emerald-800 text-white flex flex-col items-center justify-center p-6">
-      <h1 className="text-4xl font-extrabold text-teal-200 mb-4">NextInLine</h1>
-      <p className="text-teal-300 text-xl">The class session has ended.</p>
-      <button onClick={() => { setSessionEnded(false); setStudentInfo(null); setCodeInput(''); setNameInput('') }} className="mt-6 bg-teal-500 hover:bg-teal-400 text-white font-bold py-3 px-8 rounded-xl transition">Join a New Session</button>
+    <main className="min-h-screen bg-black text-white flex flex-col items-center justify-center p-6">
+      <h1 style={{ fontFamily: "'Cormorant Garamond', serif" }} className="text-5xl font-light tracking-widest mb-4">NextInLine</h1>
+      <p className="text-zinc-500 text-sm tracking-wide mb-10">The class session has ended.</p>
+      <button onClick={() => { setSessionEnded(false); setStudentInfo(null); setCodeInput(''); setNameInput('') }} className="border border-white/20 hover:border-white text-white text-xs tracking-widest uppercase px-10 py-3 transition-all duration-300 hover:bg-white hover:text-black">
+        Join a New Session
+      </button>
     </main>
   )
 
   if (!studentInfo) return (
-    <main className="min-h-screen bg-gradient-to-br from-teal-900 to-emerald-800 text-white flex flex-col items-center justify-start p-6">
-      <h1 className="text-4xl font-extrabold text-teal-200 mt-8 mb-2">NextInLine</h1>
-      <p className="text-teal-400 mb-8">Join your class queue</p>
-      <form onSubmit={handleRegister} className="bg-white/10 backdrop-blur rounded-2xl p-8 w-full max-w-sm shadow-xl">
-        <label className="block text-teal-200 font-semibold mb-2">Class Code</label>
-        <input type="text" value={codeInput} onChange={e => setCodeInput(e.target.value)} placeholder="Enter 4-digit code..." className="w-full rounded-xl px-4 py-3 text-gray-900 text-lg mb-4 outline-none focus:ring-2 focus:ring-teal-400" maxLength={4} required />
-        <label className="block text-teal-200 font-semibold mb-2">Your Name</label>
-        <input type="text" value={nameInput} onChange={e => setNameInput(e.target.value)} placeholder="Enter your name..." className="w-full rounded-xl px-4 py-3 text-gray-900 text-lg mb-6 outline-none focus:ring-2 focus:ring-teal-400" maxLength={50} required />
-        {error && <p className="text-red-400 mb-3 text-sm">{error}</p>}
-        <button type="submit" disabled={loading || !codeInput.trim() || !nameInput.trim()} className="w-full bg-teal-500 hover:bg-teal-400 disabled:opacity-50 text-white font-bold text-lg py-3 rounded-xl transition">{loading ? 'Joining...' : 'Join Class'}</button>
+    <main className="min-h-screen bg-black text-white flex flex-col items-center justify-center p-6">
+      <h1 style={{ fontFamily: "'Cormorant Garamond', serif" }} className="text-5xl font-light tracking-widest mb-2">NextInLine</h1>
+      <p className="text-zinc-500 text-xs tracking-widest uppercase mb-12">Join your class</p>
+      <form onSubmit={handleRegister} className="w-full max-w-sm space-y-6">
+        <div>
+          <label className="block text-zinc-500 text-xs tracking-widest uppercase mb-2">Class Code</label>
+          <input type="text" value={codeInput} onChange={e => setCodeInput(e.target.value)} placeholder="0000" className="w-full bg-transparent border border-white/20 text-white text-lg px-4 py-3 outline-none focus:border-white transition-colors tracking-widest text-center" maxLength={4} required />
+        </div>
+        <div>
+          <label className="block text-zinc-500 text-xs tracking-widest uppercase mb-2">Your Name</label>
+          <input type="text" value={nameInput} onChange={e => setNameInput(e.target.value)} placeholder="Enter your name" className="w-full bg-transparent border border-white/20 text-white text-lg px-4 py-3 outline-none focus:border-white transition-colors" maxLength={50} required />
+        </div>
+        {error && <p className="text-red-400 text-xs tracking-wide">{error}</p>}
+        <button type="submit" disabled={loading || !codeInput.trim() || !nameInput.trim()} className="w-full border border-white/20 hover:border-white disabled:opacity-20 text-white text-xs tracking-widest uppercase py-4 transition-all duration-300 hover:bg-white hover:text-black">
+          {loading ? 'Joining...' : 'Join Class'}
+        </button>
       </form>
     </main>
   )
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-teal-900 to-emerald-800 text-white flex flex-col items-center justify-start p-6">
-      <h1 className="text-4xl font-extrabold text-teal-200 mt-8 mb-1">NextInLine</h1>
-      <p className="text-teal-400 mb-2">Welcome, <span className="font-semibold text-teal-200">{studentInfo.name}</span></p>
-      <p className="text-teal-500 text-sm mb-8">Class code: <span className="font-mono text-teal-300">{studentInfo.sessionCode}</span></p>
+    <main className="min-h-screen bg-black text-white flex flex-col items-center justify-start p-6 pt-14">
+      <h1 style={{ fontFamily: "'Cormorant Garamond', serif" }} className="text-4xl font-light tracking-widest mb-1">NextInLine</h1>
+      <p className="text-zinc-600 text-xs tracking-widest uppercase mb-1">Welcome, <span className="text-zinc-300">{studentInfo.name}</span></p>
+      <p className="text-zinc-700 text-xs tracking-widest mb-12">Code: {studentInfo.sessionCode}</p>
+
       {!inQueue ? (
-        <form onSubmit={handleRaiseHand} className="bg-white/10 backdrop-blur rounded-2xl p-8 w-full max-w-sm shadow-xl mb-6">
-          <label className="block text-teal-200 font-semibold mb-2">What do you need help with? <span className="text-teal-400 font-normal">(optional)</span></label>
-          <input type="text" value={topic} onChange={e => setTopic(e.target.value)} placeholder="e.g. Question 3, fractions..." className="w-full rounded-xl px-4 py-3 text-gray-900 text-lg mb-4 outline-none focus:ring-2 focus:ring-teal-400" maxLength={100} />
-          {error && <p className="text-red-400 mb-3 text-sm">{error}</p>}
-          <button type="submit" disabled={loading} className="w-full bg-teal-500 hover:bg-teal-400 disabled:opacity-50 text-white font-bold text-lg py-3 rounded-xl transition">✋ Raise Hand</button>
+        <form onSubmit={handleRaiseHand} className="w-full max-w-sm space-y-6 mb-10">
+          <div>
+            <label className="block text-zinc-500 text-xs tracking-widest uppercase mb-2">What do you need help with? <span className="text-zinc-700">(optional)</span></label>
+            <input type="text" value={topic} onChange={e => setTopic(e.target.value)} placeholder="e.g. Question 3, fractions..." className="w-full bg-transparent border border-white/20 text-white px-4 py-3 outline-none focus:border-white transition-colors" maxLength={100} />
+          </div>
+          {error && <p className="text-red-400 text-xs">{error}</p>}
+          <button type="submit" disabled={loading} className="w-full border border-white/20 hover:border-white disabled:opacity-20 text-white text-xs tracking-widest uppercase py-4 transition-all duration-300 hover:bg-white hover:text-black">
+            Raise Hand
+          </button>
         </form>
       ) : (
-        <div className="w-full max-w-sm mb-6">
-          <div className="bg-white/10 backdrop-blur rounded-2xl p-8 text-center shadow-xl mb-4">
-            <p className="text-teal-300 text-sm uppercase tracking-widest mb-1">Your Position</p>
-            <p className="text-8xl font-black text-white mb-2">#{myPosition}</p>
-            <p className="text-teal-200 text-lg font-semibold">{studentInfo.name}</p>
-            {myPosition === 1 && <p className="mt-3 text-yellow-300 font-bold animate-pulse">You're next!</p>}
+        <div className="w-full max-w-sm mb-10">
+          <div className="border border-white/10 p-10 text-center mb-4">
+            <p className="text-zinc-600 text-xs uppercase tracking-widest mb-3">Your Position</p>
+            <p style={{ fontFamily: "'Cormorant Garamond', serif" }} className="text-9xl font-light text-white">#{myPosition}</p>
+            <p className="text-zinc-400 text-sm mt-3 tracking-wide">{studentInfo.name}</p>
+            {myPosition === 1 && <p className="mt-4 text-white text-xs tracking-widest uppercase animate-pulse">You're next</p>}
           </div>
-          <button onClick={handleLowerHand} className="w-full bg-red-600 hover:bg-red-500 text-white font-semibold py-3 rounded-xl transition">Lower Hand</button>
+          <button onClick={handleLowerHand} className="w-full border border-white/10 hover:border-red-500 text-zinc-600 hover:text-red-500 text-xs tracking-widest uppercase py-3 transition-all duration-300">
+            Lower Hand
+          </button>
         </div>
       )}
+
       {queue.length > 0 && (
-        <div className="w-full max-w-sm bg-white/5 rounded-2xl p-5">
-          <h2 className="text-teal-300 text-sm uppercase tracking-wide font-semibold mb-3">Queue ({queue.length})</h2>
-          <ol className="space-y-2">
+        <div className="w-full max-w-sm">
+          <h2 className="text-zinc-700 text-xs uppercase tracking-widest mb-5">Queue — {queue.length}</h2>
+          <ol className="space-y-4">
             {queue.map((s, i) => (
-              <li key={s.studentId} className={`flex items-center gap-3 p-2 rounded-lg ${s.studentId === studentInfo.studentId ? 'bg-teal-700/50 font-bold' : ''}`}>
-                <span className="w-7 h-7 rounded-full bg-teal-800 flex items-center justify-center text-xs font-bold flex-shrink-0">{i + 1}</span>
+              <li key={s.studentId} className={`flex items-center gap-5 border-b border-white/5 pb-4 ${s.studentId === studentInfo.studentId ? 'opacity-100' : 'opacity-50'}`}>
+                <span className="text-zinc-700 text-sm w-5">{i + 1}</span>
                 <div>
-                  <span className="text-white">{s.name}{s.studentId === studentInfo.studentId ? ' (you)' : ''}</span>
-                  {s.topic && <p className="text-teal-400 text-xs">{s.topic}</p>}
+                  <p style={{ fontFamily: "'Cormorant Garamond', serif" }} className="text-white text-xl font-light">{s.name}{s.studentId === studentInfo.studentId ? ' ·' : ''}</p>
+                  {s.topic && <p className="text-zinc-600 text-xs mt-1">{s.topic}</p>}
                 </div>
               </li>
             ))}
