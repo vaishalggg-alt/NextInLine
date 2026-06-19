@@ -1,42 +1,38 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { queue, broadcast } from '@/lib/queue'
+import { joinQueue, leaveQueue, nextStudent, clearQueue, getQueue } from '@/lib/queue'
 import { randomUUID } from 'crypto'
 
-export async function GET() {
+export async function GET(req: NextRequest) {
+  const code = req.nextUrl.searchParams.get('code') || ''
+  const queue = getQueue(code)
+  if (queue === null) return NextResponse.json({ error: 'Invalid session' }, { status: 404 })
   return NextResponse.json(queue)
 }
 
 export async function POST(req: NextRequest) {
-  const { name, topic } = await req.json()
-  if (!name || typeof name !== 'string') {
-    return NextResponse.json({ error: 'Name required' }, { status: 400 })
-  }
-  const student = { id: randomUUID(), name: name.trim(), topic: (topic || '').trim(), joinedAt: Date.now() }
-  queue.push(student)
-  broadcast()
-  return NextResponse.json(student, { status: 201 })
+  const { code, studentId, name, topic } = await req.json()
+  if (!code || !name) return NextResponse.json({ error: 'Missing fields' }, { status: 400 })
+  const id = studentId || randomUUID()
+  const ok = joinQueue(code, id, name.trim(), (topic || '').trim())
+  if (!ok) return NextResponse.json({ error: 'Invalid session code' }, { status: 404 })
+  return NextResponse.json({ studentId: id })
 }
 
 export async function DELETE(req: NextRequest) {
-  const { id } = await req.json()
-  const idx = queue.findIndex(s => s.id === id)
-  if (idx === -1) return NextResponse.json({ error: 'Not found' }, { status: 404 })
-  queue.splice(idx, 1)
-  broadcast()
+  const { code, studentId } = await req.json()
+  const ok = leaveQueue(code, studentId)
+  if (!ok) return NextResponse.json({ error: 'Invalid session' }, { status: 404 })
   return NextResponse.json({ ok: true })
 }
 
 export async function PUT(req: NextRequest) {
-  const { action } = await req.json()
+  const { code, action } = await req.json()
   if (action === 'next') {
-    if (queue.length === 0) return NextResponse.json({ error: 'Queue empty' }, { status: 400 })
-    const helped = queue.shift()
-    broadcast()
-    return NextResponse.json(helped)
+    const student = nextStudent(code)
+    return NextResponse.json(student || { error: 'Queue empty' })
   }
   if (action === 'clear') {
-    queue.splice(0, queue.length)
-    broadcast()
+    clearQueue(code)
     return NextResponse.json({ ok: true })
   }
   return NextResponse.json({ error: 'Unknown action' }, { status: 400 })
